@@ -96,7 +96,7 @@ io.on("connection",(socket)=>{
 app.get("/",(req,res)=>{
     return res.sendFile("index.html")
 });
-
-server.listen(3000,()=>{
+const Port=process.env.PORT||3000
+server.listen(Port,()=>{
     console.log("server connected to 3000")
 });
