@@ -88,6 +88,32 @@ io.on("connection",(socket)=>{
     socket.on("gameOver",(e)=>{
         playArr=playArr.filter(obj=>obj.p1.p1name!==e.name && obj.p2.p2name!==e.name)
     })
+
+    socket.on("disconnect", () => {
+    console.log(`Socket disconnected: ${socket.id}`);
+
+    // Remove the player from the waiting array
+    arr = arr.filter(player => player.socketId !== socket.id);
+
+    // Remove the player from any ongoing game
+    playArr = playArr.filter(game =>
+        game.p1.p1socketId !== socket.id && game.p2.p2socketId !== socket.id
+    );
+
+    // Optional: notify the other player that their opponent left
+    playArr.forEach(game => {
+        if (game.p1.p1socketId === socket.id || game.p2.p2socketId === socket.id) {
+            const remainingSocket = game.p1.p1socketId === socket.id ? game.p2.p2socketId : game.p1.p1socketId;
+            io.to(remainingSocket).emit("opponentLeft");
+        }
+    });
+});
+
+    socket.on("opponentLeft", () => {
+    showModal("Your opponent left the game 😢");
+});
+
+
 })
 
 
